@@ -45,8 +45,4 @@ public class UserServiceImpl implements UserService {
     public Optional<User> getUserById(UUID id) {
         return userDao.getUser(id);
     }
-
-    private UUID getRandomId() {
-        return UUID.randomUUID();
-    }
 }
