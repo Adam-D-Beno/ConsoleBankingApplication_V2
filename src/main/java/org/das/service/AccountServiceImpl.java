@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
     public Account create(User user) {
         Account newAccount = new Account(user);
         accountDao.save(newAccount);
-        if (isFirstAccount(newAccount.getUser().getId())) {
+        if (isFirstAccount(newAccount.getUser().getUserId())) {
             newAccount.setMoneyAmount(BigDecimal.valueOf(accountProperties.getDefaultAmount()));
         }
         return  newAccount;
@@ -40,25 +40,25 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account close(UUID accountId) {
         Account account = getAccount(accountId);
-        if (isOnlyAccount(account.getUser().getId())) {
+        if (isOnlyAccount(account.getUser().getUserId())) {
             throw new IllegalArgumentException(("Account with id=%s cant delete, " +
                     "because user have only one account").formatted(accountId));
         }
         if (account.getMoneyAmount().doubleValue() >= 1) {
             var accountNextId = getAccountNextId(account);
-            transfer(account.getId(), accountNextId, account.getMoneyAmount());
+            transfer(account.getAccountId(), accountNextId, account.getMoneyAmount());
         }
         accountDao.remove(accountId);
         return account;
     }
 
     private UUID getAccountNextId(Account account) {
-         return getAllUserAccounts(account.getUser().getId()).stream()
-                .map(Account::getId)
-                .filter(id -> !id.equals(account.getId()))
+         return getAllUserAccounts(account.getUser().getUserId()).stream()
+                .map(Account::getAccountId)
+                .filter(id -> !id.equals(account.getAccountId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No such account id=%s to transfer for user id=%s"
-                        .formatted(account.getId(), account.getUser().getId())));
+                        .formatted(account.getAccountId(), account.getUser().getUserId())));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private boolean isAccountOneUser(Account fromAccount, Account toAccount) {
-        return fromAccount.getUser().getId().equals(toAccount.getUser().getId());
+        return fromAccount.getUser().getUserId().equals(toAccount.getUser().getUserId());
     }
 
     private BigDecimal calculateAmountAfterCommission(BigDecimal amount) {
@@ -116,7 +116,7 @@ public class AccountServiceImpl implements AccountService {
 
     public List<Account> getAllUserAccounts(UUID userId) {
           return   accountDao.getAccounts().stream()
-                  .filter(account -> account.getUser().getId().equals(userId))
+                  .filter(account -> account.getUser().getUserId().equals(userId))
                   .toList();
     }
 }
