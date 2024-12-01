@@ -17,7 +17,7 @@ public class User {
     @Column(name = "login", unique = true, nullable = false)
     private String login;
 
-    @OneToMany(mappedBy = "userId")
+    @OneToMany(mappedBy = "user")
     private List<Account> accounts;
 
     public User() {
