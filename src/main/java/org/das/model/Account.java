@@ -28,6 +28,10 @@ public class Account {
         this.moneyAmount = moneyAmount;
     }
 
+    public Account(User user) {
+        this.user = user;
+    }
+
     public void setMoneyAmount(BigDecimal moneyAmount) {
         this.moneyAmount = moneyAmount;
     }
