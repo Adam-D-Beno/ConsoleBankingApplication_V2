@@ -35,9 +35,9 @@ public class CloseAccountCommand implements OperationCommand {
         String accountId = scanner.nextLine();
         userValidation.userLoginCorrect(accountId);
         Account account = accountService.close(UUID.fromString(accountId));
-        User user = userService.getUserById(account.getUserId())
+        User user = userService.getUserById(account.getUser().getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No such user with id=%s"
-                        .formatted(account.getUserId())));
+                        .formatted(account.getUser().getUserId())));
         user.getAccounts().remove(account);
         System.out.println("Account with ID=%s fro user id=%s has been closed"
                 .formatted(account.getAccountId(), user.getUserId()));
