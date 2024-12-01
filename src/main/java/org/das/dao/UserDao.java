@@ -8,12 +8,10 @@ import java.util.*;
 @Repository
 public class UserDao {
 
-    private final Map<String, User> users;
     private final TransactionHelper transactionHelper;
 
     public UserDao(TransactionHelper transactionHelper) {
         this.transactionHelper = transactionHelper;
-        this.users = new HashMap<>();
     }
 
     public Optional<User> getUserById(UUID id) {
@@ -39,7 +37,7 @@ public class UserDao {
     }
 
     public Collection<User> getUsers() {
-        return users.values();
+        return findAllUsers();
     }
 
     public List<User> findAllUsers() {
