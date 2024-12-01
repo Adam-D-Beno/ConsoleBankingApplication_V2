@@ -12,18 +12,20 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final UUID userId;
+    private UUID userId;
 
     @Column(name = "login", unique = true, nullable = false)
-    private final String login;
+    private String login;
 
     @OneToMany(mappedBy = "userId")
-    private final List<Account> accounts;
+    private List<Account> accounts;
 
-    public User(UUID userId, String login, List<Account> accounts) {
-        this.userId = userId;
-        this.accounts = accounts;
+    public User() {
+    }
+
+    public User(String login, List<Account> accounts) {
         this.login = login;
+        this.accounts = accounts;
     }
 
     public UUID getUserId() {
