@@ -115,7 +115,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public List<Account> getAllUserAccounts(UUID userId) {
-          return   accountDao.getAllAccounts().stream()
+          return   accountDao.getAccounts().stream()
                   .filter(account -> account.getUser().getUserId().equals(userId))
                   .toList();
     }
