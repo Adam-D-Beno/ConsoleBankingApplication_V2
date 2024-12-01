@@ -9,12 +9,10 @@ import java.util.*;
 @Repository
 public class AccountDao {
     private final TransactionHelper transactionHelper;
-    private final Map<UUID, Account> accounts;
 
     @Autowired
-    public AccountDao(TransactionHelper transactionHelper, Map<UUID, Account> accounts) {
+    public AccountDao(TransactionHelper transactionHelper) {
         this.transactionHelper = transactionHelper;
-        this.accounts = accounts;
     }
 
     public Account save(Account account) {
@@ -24,11 +22,11 @@ public class AccountDao {
         });
     }
 
-    public Collection<Account> getAllAccounts() {
-       return accounts.values();
+    public Collection<Account> getAccounts() {
+       return findAllAccounts();
     }
 
-    public List<Account> getAccounts() {
+    public List<Account> findAllAccounts() {
         return transactionHelper.executeInTransaction(session -> {
            return session.createQuery("SELECT ac FROM Account ac", Account.class)
                     .list();
