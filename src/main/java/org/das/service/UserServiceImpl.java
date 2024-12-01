@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         userValidation.userLoginCorrect(login);
         userValidation.userAlreadyExist(login);
         User newUser = new User(login, new ArrayList<>());
-        Account newAccount = accountService.create(newUser.getUserId());
+        Account newAccount = accountService.create(newUser);
         newUser.addAccount(newAccount);
         return userDao.saveUser(newUser);
     }
