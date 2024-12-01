@@ -12,7 +12,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID userId;
+    private UUID id;
 
     @Column(name = "login", unique = true, nullable = false)
     private String login;
@@ -29,7 +29,7 @@ public class User {
     }
 
     public UUID getUserId() {
-        return userId;
+        return id;
     }
 
     public String getLogin() {
@@ -54,12 +54,12 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
 
         User user = (User) o;
-        return userId.equals(user.userId) && login.equals(user.login);
+        return id.equals(user.id) && login.equals(user.login);
     }
 
     @Override
     public int hashCode() {
-        int result = userId.hashCode();
+        int result = id.hashCode();
         result = 31 * result + login.hashCode();
         return result;
     }
@@ -67,7 +67,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
+                "userId=" + id +
                 ", login='" + login + '\'' +
                 ", accounts=" + accounts +
                 '}';
