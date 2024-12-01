@@ -52,7 +52,7 @@ public class CreateAccountCommand implements OperationCommand {
         User user = userService.getUserById(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("No such user with id%s"
                         .formatted(userId)));
-        Account account = accountService.create(user.getUserId());
+        Account account = accountService.create(user);
         user.addAccount(account);
         System.out.println("New account created with ID =%s for user with id=%s"
                 .formatted(account.getAccountId(), user.getUserId()));
