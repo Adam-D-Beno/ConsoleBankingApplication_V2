@@ -1,13 +1,24 @@
 package org.das.model;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
+@Entity
+@Table(name = "users")
 public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final UUID userId;
+
+    @Column(name = "login", unique = true, nullable = false)
     private final String login;
+
+    @OneToMany
+    @JoinColumn(name = "acount_id", referencedColumnName = "id")
     private final List<Account> accounts;
 
     public User(UUID userId, String login, List<Account> accounts) {
