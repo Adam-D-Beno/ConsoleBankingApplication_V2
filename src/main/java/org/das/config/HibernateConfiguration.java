@@ -5,7 +5,6 @@ import org.das.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.springframework.context.annotation.Bean;
-
 import java.util.Properties;
 
 @org.springframework.context.annotation.Configuration
