@@ -2,6 +2,7 @@ package org.das.service;
 
 import org.das.dao.AccountDao;
 import org.das.model.Account;
+import org.das.model.User;
 import org.das.utils.AccountProperties;
 import org.das.validate.AccountValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account create(UUID userId) {
-        Account newAccount = new Account(getRandomId(), userId);
+    public Account create(User user) {
+        Account newAccount = new Account(user);
         accountDao.save(newAccount);
-        if (isFirstAccount(newAccount.getUserId())) {
+        if (isFirstAccount(newAccount.getUser().getUserId())) {
             newAccount.setMoneyAmount(BigDecimal.valueOf(accountProperties.getDefaultAmount()));
         }
         return  newAccount;
@@ -39,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account close(UUID accountId) {
         Account account = getAccount(accountId);
-        if (isOnlyAccount(account.getUserId())) {
+        if (isOnlyAccount(account.getUser().getUserId())) {
             throw new IllegalArgumentException(("Account with id=%s cant delete, " +
                     "because user have only one account").formatted(accountId));
         }
@@ -52,12 +53,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private UUID getAccountNextId(Account account) {
-         return getAllUserAccounts(account.getUserId()).stream()
+         return getAllUserAccounts(account.getUser().getUserId()).stream()
                 .map(Account::getAccountId)
                 .filter(id -> !id.equals(account.getAccountId()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No such account id=%s to transfer for user id=%s"
-                        .formatted(account.getAccountId(), account.getUserId())));
+                        .formatted(account.getAccountId(), account.getUser().getUserId())));
     }
 
     @Override
@@ -92,7 +93,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private boolean isAccountOneUser(Account fromAccount, Account toAccount) {
-        return fromAccount.getUserId().equals(toAccount.getUserId());
+        return fromAccount.getUser().getUserId().equals(toAccount.getUser().getUserId());
     }
 
     private BigDecimal calculateAmountAfterCommission(BigDecimal amount) {
@@ -108,10 +109,6 @@ public class AccountServiceImpl implements AccountService {
         return isOnlyAccount(userId);
     }
 
-    private UUID getRandomId() {
-        return UUID.randomUUID();
-    }
-
     private Account getAccount(UUID accountId) {
         return accountDao.getAccount(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not exist id=%s".formatted(accountId)));
@@ -119,7 +116,7 @@ public class AccountServiceImpl implements AccountService {
 
     public List<Account> getAllUserAccounts(UUID userId) {
           return   accountDao.getAllAccounts().stream()
-                  .filter(account -> account.getUserId().equals(userId))
+                  .filter(account -> account.getUser().getUserId().equals(userId))
                   .toList();
     }
 }
