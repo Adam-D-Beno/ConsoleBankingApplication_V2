@@ -16,7 +16,7 @@ public class Account {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Column(name = "money")
+    @Column(name = "money", nullable = false)
     private BigDecimal moneyAmount;
 
     public Account() {
