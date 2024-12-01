@@ -8,7 +8,6 @@ import org.hibernate.cfg.Environment;
 import org.springframework.context.annotation.Bean;
 import java.util.Properties;
 
-@org.springframework.context.annotation.Configuration
 public class HibernateConfiguration {
 
     @Bean
