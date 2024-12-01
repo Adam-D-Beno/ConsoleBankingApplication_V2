@@ -10,7 +10,7 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID accountId;
+    private UUID id;
 
     @ManyToOne()
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -32,7 +32,7 @@ public class Account {
     }
 
     public UUID getAccountId() {
-        return accountId;
+        return id;
     }
 
     public User getUser() {
@@ -56,12 +56,12 @@ public class Account {
         if (o == null || getClass() != o.getClass()) return false;
 
         Account account = (Account) o;
-        return accountId.equals(account.accountId) && user.equals(account.user);
+        return id.equals(account.id) && user.equals(account.user);
     }
 
     @Override
     public int hashCode() {
-        int result = accountId.hashCode();
+        int result = id.hashCode();
         result = 31 * result + user.hashCode();
         return result;
     }
@@ -69,7 +69,7 @@ public class Account {
     @Override
     public String toString() {
         return "Account{" +
-                "accountId=" + accountId +
+                "accountId=" + id +
                 ", userId=" + user +
                 ", moneyAmount=" + moneyAmount +
                 '}';
