@@ -43,6 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getUserById(UUID id) {
-        return userDao.getUser(id);
+        return userDao.getUserById(id);
     }
 }
