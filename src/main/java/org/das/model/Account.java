@@ -1,30 +1,43 @@
 package org.das.model;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.UUID;
-
+@Entity
+@Table(name = "accounts")
 public class Account {
-    private final UUID accountId;
-    private final UUID userId;
 
-    public void setMoneyAmount(BigDecimal moneyAmount) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private UUID accountId;
+
+    @ManyToOne()
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    @Column(name = "money")
+    private BigDecimal moneyAmount;
+
+    public Account() {
+
+    }
+
+    public Account(User user, BigDecimal moneyAmount) {
+        this.user = user;
         this.moneyAmount = moneyAmount;
     }
 
-    private BigDecimal moneyAmount;
-
-    public Account(UUID accountId, UUID userId) {
-        this.accountId = accountId;
-        this.userId = userId;
-        this.moneyAmount = BigDecimal.ZERO;
+    public void setMoneyAmount(BigDecimal moneyAmount) {
+        this.moneyAmount = moneyAmount;
     }
 
     public UUID getAccountId() {
         return accountId;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     public BigDecimal getMoneyAmount() {
@@ -44,13 +57,13 @@ public class Account {
         if (o == null || getClass() != o.getClass()) return false;
 
         Account account = (Account) o;
-        return accountId.equals(account.accountId) && userId.equals(account.userId);
+        return accountId.equals(account.accountId) && user.equals(account.user);
     }
 
     @Override
     public int hashCode() {
         int result = accountId.hashCode();
-        result = 31 * result + userId.hashCode();
+        result = 31 * result + user.hashCode();
         return result;
     }
 
@@ -58,7 +71,7 @@ public class Account {
     public String toString() {
         return "Account{" +
                 "accountId=" + accountId +
-                ", userId=" + userId +
+                ", userId=" + user +
                 ", moneyAmount=" + moneyAmount +
                 '}';
     }
