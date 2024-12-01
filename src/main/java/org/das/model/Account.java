@@ -23,11 +23,6 @@ public class Account {
 
     }
 
-    public Account(User user, BigDecimal moneyAmount) {
-        this.user = user;
-        this.moneyAmount = moneyAmount;
-    }
-
     public Account(User user) {
         this.user = user;
     }
