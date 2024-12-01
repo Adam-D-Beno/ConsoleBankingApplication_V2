@@ -4,7 +4,6 @@ import org.das.model.Account;
 import org.das.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Properties;
@@ -20,13 +19,13 @@ public class HibernateConfiguration {
         configuration.addAnnotatedClass(User.class);
 
         Properties properties = new Properties();
-        properties.setProperty(Environment.DRIVER, "org.postgresql.Driver");
-        properties.setProperty(Environment.URL, "jdbc:postgresql://localhost:5432/postgres");
-        properties.setProperty(Environment.USER, "postgres");
-        properties.setProperty(Environment.PASS, "Aa123456!");
-        properties.setProperty(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
-        properties.setProperty(Environment.SHOW_SQL, "true");
-        properties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
+        properties.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
+        properties.setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/postgres");
+        properties.setProperty("hibernate.connection.username", "postgres");
+        properties.setProperty("hibernate.connection.password", "Aa123456!");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        properties.setProperty("hibernate.show_sql", "true");
+        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         configuration.setProperties(properties);
 
         return configuration.buildSessionFactory();
