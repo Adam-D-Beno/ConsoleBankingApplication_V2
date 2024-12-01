@@ -3,8 +3,8 @@ package org.das.dao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -12,6 +12,7 @@ import java.util.function.Function;
 public class TransactionHelper {
     private final SessionFactory sessionFactory;
 
+    @Autowired
     public TransactionHelper(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
