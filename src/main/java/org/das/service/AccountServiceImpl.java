@@ -7,10 +7,10 @@ import org.das.utils.AccountProperties;
 import org.das.validate.AccountValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -30,15 +30,16 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account create(User user) {
         Account newAccount = new Account(user);
-        accountDao.save(newAccount);
+
         if (isFirstAccount(newAccount.getUser().getUserId())) {
             newAccount.setMoneyAmount(BigDecimal.valueOf(accountProperties.getDefaultAmount()));
         }
+        accountDao.save(newAccount);
         return  newAccount;
     }
 
     @Override
-    public Account close(UUID accountId) {
+    public Account close(Long accountId) {
         Account account = getAccount(accountId);
         if (isOnlyAccount(account.getUser().getUserId())) {
             throw new IllegalArgumentException(("Account with id=%s cant delete, " +
@@ -52,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
         return account;
     }
 
-    private UUID getAccountNextId(Account account) {
+    private Long getAccountNextId(Account account) {
          return getAllUserAccounts(account.getUser().getUserId()).stream()
                 .map(Account::getAccountId)
                 .filter(id -> !id.equals(account.getAccountId()))
@@ -62,14 +63,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void deposit(UUID accountId, BigDecimal amount) {
+    public void deposit(Long accountId, BigDecimal amount) {
         accountValidation.negativeAmount(amount);
         Account account = getAccount(accountId);
         account.increaseAmount(amount);
     }
 
     @Override
-    public void withdraw(UUID accountId, BigDecimal amount) {
+    public void withdraw(Long accountId, BigDecimal amount) {
         accountValidation.negativeAmount(amount);
         Account account = getAccount(accountId);
         accountValidation.negativeBalance(account, amount);
@@ -77,10 +78,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void transfer(UUID senderId, UUID recipientId, BigDecimal amount) {
+    public void transfer(Long accountFromId, Long accountToId, BigDecimal amount) {
         accountValidation.negativeAmount(amount);
-        Account fromAccount = getAccount(senderId);
-        Account toAccount = getAccount(recipientId);
+        Account fromAccount = getAccount(accountFromId);
+        Account toAccount = getAccount(accountToId);
         accountValidation.isSameAccount(fromAccount, toAccount);
         if (isAccountOneUser(fromAccount, toAccount)) {
             fromAccount.decreaseAmount(amount);
@@ -101,20 +102,21 @@ public class AccountServiceImpl implements AccountService {
         return amount.multiply(BigDecimal.ONE.subtract(commission)).setScale(2, RoundingMode.HALF_UP);
     }
 
-    private boolean isOnlyAccount(UUID userId) {
-        return getAllUserAccounts(userId).size() == 1;
+    private boolean isOnlyAccount(Long userId) {
+        return getAllUserAccounts(userId).size() == 0;
     }
 
-    private boolean isFirstAccount(UUID userId) {
+    private boolean isFirstAccount(Long userId) {
         return isOnlyAccount(userId);
     }
 
-    private Account getAccount(UUID accountId) {
+    private Account getAccount(Long accountId) {
         return accountDao.getAccount(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not exist id=%s".formatted(accountId)));
     }
 
-    public List<Account> getAllUserAccounts(UUID userId) {
+    //todo can be optimized
+    public List<Account> getAllUserAccounts(Long userId) {
           return   accountDao.getAccounts().stream()
                   .filter(account -> account.getUser().getUserId().equals(userId))
                   .toList();
