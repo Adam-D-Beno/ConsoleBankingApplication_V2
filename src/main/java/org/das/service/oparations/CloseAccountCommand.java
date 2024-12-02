@@ -8,8 +8,8 @@ import org.das.utils.ConsoleOperationType;
 import org.das.validate.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import java.util.Scanner;
-import java.util.UUID;
 
 @Component
 public class CloseAccountCommand implements OperationCommand {
@@ -32,9 +32,8 @@ public class CloseAccountCommand implements OperationCommand {
     @Override
     public void execute() {
         System.out.println("Enter account ID to close: ");
-        String accountId = scanner.nextLine();
-        userValidation.userLoginCorrect(accountId);
-        Account account = accountService.close(UUID.fromString(accountId));
+        Long accountId = scanner.nextLong();
+        Account account = accountService.close(accountId);
         User user = userService.getUserById(account.getUser().getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("No such user with id=%s"
                         .formatted(account.getUser().getUserId())));
