@@ -86,15 +86,13 @@ public class AccountServiceImpl implements AccountService {
         Account toAccount = getAccount(accountToId);
         accountValidation.isSameAccount(fromAccount, toAccount);
         if (isAccountOneUser(fromAccount, toAccount)) {
-            fromAccount.decreaseAmount(amount);
-            toAccount.increaseAmount(amount);
+            withdraw(fromAccount.getAccountId(), amount);
+            deposit(toAccount.getAccountId(), amount);
             return;
         }
         BigDecimal amountAfterCommission = calculateAmountAfterCommission(amount);
-        fromAccount.decreaseAmount(amount);
-        toAccount.increaseAmount(amountAfterCommission);
-        accountDao.update(fromAccount);
-        accountDao.update(toAccount);
+        withdraw(fromAccount.getAccountId(), amount);
+        deposit(toAccount.getAccountId(), amountAfterCommission);
     }
 
     private boolean isAccountOneUser(Account fromAccount, Account toAccount) {
