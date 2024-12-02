@@ -14,7 +14,7 @@ public class UserDao {
         this.transactionHelper = transactionHelper;
     }
 
-    public Optional<User> getUserById(UUID id) {
+    public Optional<User> getUserById(Long id) {
         return transactionHelper.executeInTransaction(session -> {
             return Optional.ofNullable(session.get(User.class, id));
         });
