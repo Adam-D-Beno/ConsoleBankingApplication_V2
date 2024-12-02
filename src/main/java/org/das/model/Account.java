@@ -1,6 +1,7 @@
 package org.das.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 @Entity
@@ -16,6 +17,7 @@ public class Account {
     private User user;
 
     @Column(name = "money")
+    @ColumnDefault(value = "0")
     private BigDecimal moneyAmount;
 
     public Account() {
