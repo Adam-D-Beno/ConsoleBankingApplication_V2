@@ -67,6 +67,7 @@ public class AccountServiceImpl implements AccountService {
         accountValidation.negativeAmount(amount);
         Account account = getAccount(accountId);
         account.increaseAmount(amount);
+        accountDao.update(account);
     }
 
     @Override
@@ -75,6 +76,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = getAccount(accountId);
         accountValidation.negativeBalance(account, amount);
         account.decreaseAmount(amount);
+        accountDao.update(account);
     }
 
     @Override
@@ -91,6 +93,8 @@ public class AccountServiceImpl implements AccountService {
         BigDecimal amountAfterCommission = calculateAmountAfterCommission(amount);
         fromAccount.decreaseAmount(amount);
         toAccount.increaseAmount(amountAfterCommission);
+        accountDao.update(fromAccount);
+        accountDao.update(toAccount);
     }
 
     private boolean isAccountOneUser(Account fromAccount, Account toAccount) {
