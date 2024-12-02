@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -12,12 +11,12 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+    private Long id;
 
     @Column(name = "login", unique = true, nullable = false)
     private String login;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Account> accounts;
 
     public User() {
@@ -28,7 +27,7 @@ public class User {
         this.accounts = accounts;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return id;
     }
 
@@ -42,9 +41,10 @@ public class User {
 
     public void addAccount(Account account) {
         this.accounts.add(account);
+        account.setUser(this);
     }
 
-    public Optional<Account> getAccountById(UUID accountId) {
+    public Optional<Account> getAccountById(Long accountId) {
         return accounts.stream().filter(account -> account.getAccountId().equals(accountId)).findFirst();
     }
 
