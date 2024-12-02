@@ -5,9 +5,9 @@ import org.das.utils.ConsoleOperationType;
 import org.das.validate.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.Scanner;
-import java.util.UUID;
 
 @Component
 public class TransferCommand implements OperationCommand {
@@ -22,18 +22,18 @@ public class TransferCommand implements OperationCommand {
         this.scanner = scanner;
     }
 
+    //todo use the try -catch block to handle exceptions
     @Override
     public void execute() {
         System.out.println("Enter source account ID: ");
-        String source = scanner.nextLine();
-        userValidation.userLoginCorrect(source);
+        Long accountFromId = scanner.nextLong();;
         System.out.println("Enter target account ID: ");
-        String target = scanner.nextLine();
-        userValidation.userLoginCorrect(target);
+        Long accountToId = scanner.nextLong();;
         System.out.println("Enter amount to transfer: ");
         double amount = scanner.nextDouble();
-        accountService.transfer(UUID.fromString(source), UUID.fromString(target), BigDecimal.valueOf(amount));
-        System.out.println(" Amount " + amount + " transferred from account ID " + source + " to account ID " + target);
+        accountService.transfer(accountFromId, accountToId, BigDecimal.valueOf(amount));
+        System.out.println(" Amount " + amount + " transferred from account ID "
+                + accountFromId + " to account ID " + accountToId);
     }
 
     @Override
