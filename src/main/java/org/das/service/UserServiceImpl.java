@@ -7,9 +7,9 @@ import org.das.model.User;
 import org.das.validate.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -29,11 +29,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(String login) {
         userValidation.userLoginCorrect(login);
-        userValidation.userAlreadyExist(login);
+        userValidation.userAlreadyExist(login); //todo do select get user from UserDao
         User newUser = new User(login, new ArrayList<>());
+        userDao.saveUser(newUser);
         Account newAccount = accountService.create(newUser);
         newUser.addAccount(newAccount);
-        return userDao.saveUser(newUser);
+        return newUser;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserById(UUID id) {
+    public Optional<User> getUserById(Long id) {
         return userDao.getUserById(id);
     }
 }
