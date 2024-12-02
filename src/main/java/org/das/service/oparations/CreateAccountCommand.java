@@ -10,9 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
-import java.util.UUID;
-
-import static java.util.UUID.fromString;
 
 @Component
 public class CreateAccountCommand implements OperationCommand {
@@ -41,15 +38,12 @@ public class CreateAccountCommand implements OperationCommand {
     @Override
     public void execute() {
         System.out.println("Enter the user id for which to create an account: ");
-        String userId = scanner.nextLine();
-        userValidation.userLoginCorrect(userId);
-        UUID uuid;
+        Long userId = scanner.nextLong();
         try {
-            uuid = fromString(userId);
         } catch (Exception e) {
             throw new IllegalArgumentException("wrong input user id " +e.getMessage());
         }
-        User user = userService.getUserById(uuid)
+        User user = userService.getUserById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No such user with id%s"
                         .formatted(userId)));
         Account account = accountService.create(user);
