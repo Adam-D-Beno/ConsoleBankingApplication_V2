@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
-import java.util.UUID;
 
 @Component
 public class DepositCommand implements OperationCommand {
@@ -26,11 +25,10 @@ public class DepositCommand implements OperationCommand {
     @Override
     public void execute() {
         System.out.println("Enter account ID: ");
-        String accountId = scanner.nextLine();
-        userValidation.userLoginCorrect(accountId);
+        Long accountId = scanner.nextLong();
         System.out.println("Enter amount to deposit: ");
         double amount = scanner.nextDouble();
-        accountService.deposit(UUID.fromString(accountId), BigDecimal.valueOf(amount));
+        accountService.deposit(accountId, BigDecimal.valueOf(amount));
         System.out.println("Amount " + amount + " deposited to account ID: " + accountId);
     }
 
