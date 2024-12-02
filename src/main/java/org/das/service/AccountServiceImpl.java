@@ -31,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
     public Account create(User user) {
         Account newAccount = new Account(user);
 
-        if (isFirstAccount(newAccount.getUser().getUserId())) {
+        if (isFirstAccount(newAccount.getUser())) {
             newAccount.setMoneyAmount(BigDecimal.valueOf(accountProperties.getDefaultAmount()));
         }
         accountDao.save(newAccount);
@@ -41,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account close(Long accountId) {
         Account account = getAccount(accountId);
-        if (isOnlyAccount(account.getUser().getUserId())) {
+        if (isOnlyAccount(account.getUser())) {
             throw new IllegalArgumentException(("Account with id=%s cant delete, " +
                     "because user have only one account").formatted(accountId));
         }
@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private Long getAccountNextId(Account account) {
-         return getAllUserAccounts(account.getUser().getUserId()).stream()
+         return getAllUserAccounts(account.getUser()).stream()
                 .map(Account::getAccountId)
                 .filter(id -> !id.equals(account.getAccountId()))
                 .findFirst()
@@ -102,12 +102,12 @@ public class AccountServiceImpl implements AccountService {
         return amount.multiply(BigDecimal.ONE.subtract(commission)).setScale(2, RoundingMode.HALF_UP);
     }
 
-    private boolean isOnlyAccount(Long userId) {
-        return getAllUserAccounts(userId).size() == 0;
+    private boolean isOnlyAccount(User user) {
+        return getAllUserAccounts(user).size() == 0;
     }
 
-    private boolean isFirstAccount(Long userId) {
-        return isOnlyAccount(userId);
+    private boolean isFirstAccount(User user) {
+        return isOnlyAccount(user);
     }
 
     private Account getAccount(Long accountId) {
@@ -116,9 +116,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     //todo can be optimized
-    public List<Account> getAllUserAccounts(Long userId) {
-          return   accountDao.getAccounts().stream()
-                  .filter(account -> account.getUser().getUserId().equals(userId))
+    public List<Account> getAllUserAccounts(User user) {
+          return   user.getAccounts().stream()
+                  .filter(account -> account.getUser().getUserId().equals(user.getUserId()))
                   .toList();
     }
 }
