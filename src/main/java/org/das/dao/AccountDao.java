@@ -22,9 +22,11 @@ public class AccountDao {
         });
     }
 
-    //todo can be optimized by using findAll by UserId
-    public Collection<Account> getAccounts() {
-       return findAllAccounts();
+    public Account update(Account account) {
+        return transactionHelper.executeInTransaction(session -> {
+            session.merge(account);
+            return account;
+        });
     }
 
     public List<Account> findAllAccountsByUserId(Long userId) {
@@ -32,13 +34,6 @@ public class AccountDao {
             return session.createQuery(
                     "SELECT ac FROM Account ac WHERE ac.user.id = :userId", Account.class)
                     .setParameter("userId", userId)
-                    .list();
-        });
-    }
-
-    public List<Account> findAllAccounts() {
-        return transactionHelper.executeInTransaction(session -> {
-           return session.createQuery("SELECT ac FROM Account ac", Account.class)
                     .list();
         });
     }
