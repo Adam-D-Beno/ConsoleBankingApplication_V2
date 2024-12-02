@@ -3,20 +3,19 @@ package org.das.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 @Entity
 @Table(name = "accounts")
 public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+    private Long id;
 
     @ManyToOne()
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Column(name = "money", nullable = false)
+    @Column(name = "money")
     private BigDecimal moneyAmount;
 
     public Account() {
@@ -31,7 +30,7 @@ public class Account {
         this.moneyAmount = moneyAmount;
     }
 
-    public UUID getAccountId() {
+    public Long getAccountId() {
         return id;
     }
 
@@ -41,6 +40,10 @@ public class Account {
 
     public BigDecimal getMoneyAmount() {
         return moneyAmount;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void increaseAmount(BigDecimal amount) {
@@ -70,7 +73,6 @@ public class Account {
     public String toString() {
         return "Account{" +
                 "accountId=" + id +
-                ", userId=" + user +
                 ", moneyAmount=" + moneyAmount +
                 '}';
     }
