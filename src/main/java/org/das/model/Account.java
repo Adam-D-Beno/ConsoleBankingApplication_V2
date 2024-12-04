@@ -54,6 +54,20 @@ public class Account {
         this.moneyAmount = moneyAmount.subtract(amount);
     }
 
+    public void addUser(User user) {
+        if (!user.getAccounts().contains(this)) {
+            user.addAccount(this);
+            this.user = user;
+        }
+    }
+
+    public void removeUser(User user) {
+        if (user.getAccounts().contains(this)) {
+            user.removeAccount(this);
+            this.user = null;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
