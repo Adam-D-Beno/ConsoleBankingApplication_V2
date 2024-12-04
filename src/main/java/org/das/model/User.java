@@ -3,7 +3,6 @@ package org.das.model;
 import jakarta.persistence.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "users")
@@ -47,10 +46,6 @@ public class User {
     public void removeAccount(Account account) {
         this.accounts.remove(account);
         account.setUser(null);
-    }
-
-    public Optional<Account> getAccountById(Long accountId) {
-        return accounts.stream().filter(account -> account.getAccountId().equals(accountId)).findFirst();
     }
 
     @Override
