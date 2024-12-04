@@ -16,7 +16,7 @@ public class User {
     @Column(name = "login", unique = true, nullable = false)
     private String login;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Account> accounts;
 
     public User() {
@@ -42,6 +42,11 @@ public class User {
     public void addAccount(Account account) {
         this.accounts.add(account);
         account.setUser(this);
+    }
+
+    public void removeAccount(Account account) {
+        this.accounts.remove(account);
+        account.setUser(null);
     }
 
     public Optional<Account> getAccountById(Long accountId) {
