@@ -1,7 +1,6 @@
 package org.das.service.oparations;
 
 import org.das.model.Account;
-import org.das.model.User;
 import org.das.service.AccountService;
 import org.das.service.UserService;
 import org.das.utils.ConsoleOperationType;
@@ -33,13 +32,9 @@ public class CloseAccountCommand implements OperationCommand {
     public void execute() {
         System.out.println("Enter account ID to close: ");
         Long accountId = scanner.nextLong();
-        Account account = accountService.close(accountId);
-        User user = userService.getUserById(account.getUser().getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("No such user with id=%s"
-                        .formatted(account.getUser().getUserId())));
-        user.getAccounts().remove(account);
+        Account accountClose = accountService.close(accountId);
         System.out.println("Account with ID=%s fro user id=%s has been closed"
-                .formatted(account.getAccountId(), user.getUserId()));
+                .formatted(accountClose.getAccountId(), accountClose.getUser().getUserId()));
     }
 
     @Override
