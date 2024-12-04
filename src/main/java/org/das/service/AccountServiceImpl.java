@@ -119,7 +119,6 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new IllegalArgumentException("Account not exist id=%s".formatted(accountId)));
     }
 
-    //todo can be optimized
     public List<Account> getAllUserAccounts(User user) {
           return   user.getAccounts().stream()
                   .filter(account -> account.getUser().getUserId().equals(user.getUserId()))
