@@ -5,7 +5,6 @@ import org.das.model.User;
 import org.das.service.AccountService;
 import org.das.service.UserService;
 import org.das.utils.ConsoleOperationType;
-import org.das.validate.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,17 +12,14 @@ import java.util.Scanner;
 
 @Component
 public class CreateAccountCommand implements OperationCommand {
-    private final UserValidation userValidation;
     private final AccountService accountService;
     private final UserService userService;
     private final Scanner scanner;
 
     @Autowired
-    public CreateAccountCommand(UserValidation userValidation,
-                                AccountService accountService,
+    public CreateAccountCommand(AccountService accountService,
                                 UserService userService,
                                 Scanner scanner) {
-        this.userValidation = userValidation;
         this.accountService = accountService;
         this.userService = userService;
         this.scanner = scanner;
