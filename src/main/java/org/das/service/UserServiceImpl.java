@@ -2,7 +2,6 @@ package org.das.service;
 
 
 import org.das.dao.UserDao;
-import org.das.model.Account;
 import org.das.model.User;
 import org.das.validate.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +28,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(String login) {
         userValidation.userLoginCorrect(login);
-        userValidation.userAlreadyExist(login); //todo do select get user from UserDao
+        userValidation.userAlreadyExist(login);
         User newUser = new User(login, new ArrayList<>());
         userDao.saveUser(newUser);
-        Account newAccount = accountService.create(newUser);
-        newUser.addAccount(newAccount);
+        accountService.create(newUser);
         return newUser;
     }
 
