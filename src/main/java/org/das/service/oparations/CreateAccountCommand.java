@@ -39,15 +39,10 @@ public class CreateAccountCommand implements OperationCommand {
     public void execute() {
         System.out.println("Enter the user id for which to create an account: ");
         Long userId = scanner.nextLong();
-        try {
-        } catch (Exception e) {
-            throw new IllegalArgumentException("wrong input user id " +e.getMessage());
-        }
         User user = userService.getUserById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No such user with id%s"
                         .formatted(userId)));
         Account account = accountService.create(user);
-        user.addAccount(account);
         System.out.println("New account created with ID =%s for user with id=%s"
                 .formatted(account.getAccountId(), user.getUserId()));
     }
