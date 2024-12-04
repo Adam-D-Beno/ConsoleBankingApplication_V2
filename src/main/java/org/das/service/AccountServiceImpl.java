@@ -35,6 +35,7 @@ public class AccountServiceImpl implements AccountService {
             newAccount.setMoneyAmount(BigDecimal.valueOf(accountProperties.getDefaultAmount()));
         }
         accountDao.save(newAccount);
+        newAccount.addUser(user);
         return  newAccount;
     }
 
@@ -49,6 +50,7 @@ public class AccountServiceImpl implements AccountService {
             var accountNextId = getAccountNextId(account);
             transfer(account.getAccountId(), accountNextId, account.getMoneyAmount());
         }
+        account.removeUser(account.getUser());
         accountDao.remove(accountId);
         return account;
     }
