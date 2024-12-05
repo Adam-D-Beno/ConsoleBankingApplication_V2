@@ -6,7 +6,6 @@ import org.das.model.Account;
 import org.das.model.User;
 import org.das.utils.AccountProperties;
 import org.das.validate.AccountValidation;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,6 @@ public class AccountServiceImpl implements AccountService {
     private final AccountDao accountDao;
     private final AccountValidation accountValidation;
     private final AccountProperties accountProperties;
-    private final SessionFactory sessionFactory;
     private final UserDao userDao;
 
 
@@ -27,12 +25,11 @@ public class AccountServiceImpl implements AccountService {
     public AccountServiceImpl(AccountDao accountDao,
                               AccountValidation accountValidation,
                               AccountProperties accountProperties,
-                              SessionFactory sessionFactory, UserDao userDao
+                              UserDao userDao
     ) {
         this.accountDao = accountDao;
         this.accountValidation = accountValidation;
         this.accountProperties = accountProperties;
-        this.sessionFactory = sessionFactory;
         this.userDao = userDao;
     }
 
