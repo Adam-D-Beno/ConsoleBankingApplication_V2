@@ -1,6 +1,7 @@
 package org.das.dao;
 
 import org.das.model.Account;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -10,11 +11,19 @@ import java.util.Optional;
 @Repository
 public class AccountDao {
     private final TransactionHelper transactionHelper;
-
+    private final SessionFactory sessionFactory;
     @Autowired
-    public AccountDao(TransactionHelper transactionHelper) {
+    public AccountDao(TransactionHelper transactionHelper, SessionFactory sessionFactory) {
         this.transactionHelper = transactionHelper;
+        this.sessionFactory = sessionFactory;
     }
+
+//    public Account save(Account account) {
+//        return transactionHelper.executeInTransaction(session -> {
+//            session.persist(account);
+//            return account;
+//        });
+//    }
 
     public Account save(Account account) {
         return transactionHelper.executeInTransaction(session -> {
