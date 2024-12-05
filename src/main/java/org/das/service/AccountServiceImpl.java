@@ -1,11 +1,11 @@
 package org.das.service;
 
 import org.das.dao.AccountDao;
+import org.das.dao.UserDao;
 import org.das.model.Account;
 import org.das.model.User;
 import org.das.utils.AccountProperties;
 import org.das.validate.AccountValidation;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,30 +20,35 @@ public class AccountServiceImpl implements AccountService {
     private final AccountValidation accountValidation;
     private final AccountProperties accountProperties;
     private final SessionFactory sessionFactory;
+    private final UserDao userDao;
+
 
     @Autowired
     public AccountServiceImpl(AccountDao accountDao,
                               AccountValidation accountValidation,
                               AccountProperties accountProperties,
-                              SessionFactory sessionFactory) {
+                              SessionFactory sessionFactory, UserDao userDao
+    ) {
         this.accountDao = accountDao;
         this.accountValidation = accountValidation;
         this.accountProperties = accountProperties;
         this.sessionFactory = sessionFactory;
+        this.userDao = userDao;
     }
 
     @Override
-    public Account create(User user) {
+    public Account create(Long userId) {
+        User user = userDao.getUserById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("No such user with id%s"
+                        .formatted(userId)));
         Account newAccount = new Account(user);
-
         if (isFirstAccount(newAccount.getUser())) {
             newAccount.setMoneyAmount(BigDecimal.valueOf(accountProperties.getDefaultAmount()));
         }
-        try(Session session = sessionFactory.openSession()) {
-            accountDao.save(newAccount, session);
-            newAccount.addUser(user);
-        }
-        return  newAccount;
+        accountDao.save(newAccount);
+        user.addAccount(newAccount);
+        userDao.update(user);
+        return newAccount;
     }
 
     @Override
@@ -57,13 +62,12 @@ public class AccountServiceImpl implements AccountService {
             var accountNextId = getAccountNextId(account);
             transfer(account.getAccountId(), accountNextId, account.getMoneyAmount());
         }
-        account.removeUser(account.getUser());
         accountDao.remove(accountId);
         return account;
     }
 
     private Long getAccountNextId(Account account) {
-         return getAllUserAccounts(account.getUser()).stream()
+        return getAllUserAccounts(account.getUser()).stream()
                 .map(Account::getAccountId)
                 .filter(id -> !id.equals(account.getAccountId()))
                 .findFirst()
@@ -127,11 +131,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public List<Account> getAllUserAccounts(User user) {
-        List<Account> accountsByUser = accountDao.findAllAccountsByUserId(user.getUserId())
+        return accountDao.findAllAccountsByUserId(user.getUserId())
                 .stream()
                 .filter(account -> account.getUser().getUserId().equals(user.getUserId()))
-                .toList();;
-          return accountsByUser;
+                .toList();
     }
 }
 
