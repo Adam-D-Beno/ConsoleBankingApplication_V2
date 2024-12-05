@@ -1,9 +1,7 @@
 package org.das.service.oparations;
 
 import org.das.model.Account;
-import org.das.model.User;
 import org.das.service.AccountService;
-import org.das.service.UserService;
 import org.das.utils.ConsoleOperationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,15 +11,13 @@ import java.util.Scanner;
 @Component
 public class CreateAccountCommand implements OperationCommand {
     private final AccountService accountService;
-    private final UserService userService;
     private final Scanner scanner;
 
     @Autowired
     public CreateAccountCommand(AccountService accountService,
-                                UserService userService,
+
                                 Scanner scanner) {
         this.accountService = accountService;
-        this.userService = userService;
         this.scanner = scanner;
     }
 
@@ -35,11 +31,8 @@ public class CreateAccountCommand implements OperationCommand {
     public void execute() {
         System.out.println("Enter the user id for which to create an account: ");
         Long userId = scanner.nextLong();
-        User user = userService.getUserById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("No such user with id%s"
-                        .formatted(userId)));
-        Account account = accountService.create(user);
+        Account account = accountService.create(userId);
         System.out.println("New account created with ID =%s for user with id=%s"
-                .formatted(account.getAccountId(), user.getUserId()));
+                .formatted(account.getAccountId(), account.getUser().getUserId()));
     }
 }
