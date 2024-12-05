@@ -25,7 +25,7 @@ public class HibernateConfiguration {
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-//        properties.setProperty("hibernate.current_session_context_class", "thread");
+        properties.setProperty("hibernate.current_session_context_class", "thread");
         configuration.setProperties(properties);
 
         return configuration.buildSessionFactory();
