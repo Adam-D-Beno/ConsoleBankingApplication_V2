@@ -35,6 +35,7 @@ public class CloseAccountCommand implements OperationCommand {
         Account accountClose = accountService.close(accountId);
         System.out.println("Account with ID=%s fro user id=%s has been closed"
                 .formatted(accountClose.getAccountId(), accountClose.getUser().getUserId()));
+        accountClose.removeUser(accountClose.getUser());
     }
 
     @Override
