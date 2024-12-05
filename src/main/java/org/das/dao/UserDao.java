@@ -51,4 +51,10 @@ public class UserDao {
     public boolean userExist(String login) {
         return getUserByLogin(login).isPresent();
     }
+
+    public void update(User user) {
+        transactionHelper.executeInTransaction(session -> {
+            session.merge(user);
+        });
+    }
 }
