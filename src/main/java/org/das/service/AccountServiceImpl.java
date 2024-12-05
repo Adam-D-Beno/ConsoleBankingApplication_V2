@@ -5,6 +5,8 @@ import org.das.model.Account;
 import org.das.model.User;
 import org.das.utils.AccountProperties;
 import org.das.validate.AccountValidation;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +19,17 @@ public class AccountServiceImpl implements AccountService {
     private final AccountDao accountDao;
     private final AccountValidation accountValidation;
     private final AccountProperties accountProperties;
+    private final SessionFactory sessionFactory;
 
     @Autowired
     public AccountServiceImpl(AccountDao accountDao,
                               AccountValidation accountValidation,
-                              AccountProperties accountProperties) {
+                              AccountProperties accountProperties,
+                              SessionFactory sessionFactory) {
         this.accountDao = accountDao;
         this.accountValidation = accountValidation;
         this.accountProperties = accountProperties;
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
@@ -34,8 +39,10 @@ public class AccountServiceImpl implements AccountService {
         if (isFirstAccount(newAccount.getUser())) {
             newAccount.setMoneyAmount(BigDecimal.valueOf(accountProperties.getDefaultAmount()));
         }
-        accountDao.save(newAccount);
-        newAccount.addUser(user);
+        try(Session session = sessionFactory.openSession()) {
+            accountDao.save(newAccount, session);
+            newAccount.addUser(user);
+        }
         return  newAccount;
     }
 
@@ -120,9 +127,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public List<Account> getAllUserAccounts(User user) {
-          return   user.getAccounts().stream()
-                  .filter(account -> account.getUser().getUserId().equals(user.getUserId()))
-                  .toList();
+        List<Account> accountsByUser = accountDao.findAllAccountsByUserId(user.getUserId())
+                .stream()
+                .filter(account -> account.getUser().getUserId().equals(user.getUserId()))
+                .toList();;
+          return accountsByUser;
     }
 }
 
