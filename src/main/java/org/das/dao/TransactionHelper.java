@@ -36,6 +36,8 @@ public class TransactionHelper {
                 transaction.rollback();
             }
             throw e;
+        } finally {
+            session.close();
         }
     }
 
@@ -56,6 +58,8 @@ public class TransactionHelper {
                 transaction.rollback();
             }
             throw e;
+        } finally {
+            session.close();
         }
     }
 }
