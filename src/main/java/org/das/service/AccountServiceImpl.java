@@ -59,6 +59,7 @@ public class AccountServiceImpl implements AccountService {
             transfer(account.getAccountId(), accountNextId, account.getMoneyAmount());
         }
         accountDao.remove(accountId);
+        account.removeUser(account.getUser()); // todo need i remove user from account?
         return account;
     }
 
