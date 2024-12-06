@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -64,7 +63,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private Long getAccountNextId(Account account) {
-        return getAllUserAccounts(account.getUser()).stream()
+        return account.getUser().getAccounts().stream()
                 .map(Account::getAccountId)
                 .filter(id -> !id.equals(account.getAccountId()))
                 .findFirst()
@@ -115,7 +114,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private boolean isOnlyAccount(User user) {
-        return getAllUserAccounts(user).size() == 0;
+        return user.getAccounts().size() == 0;
     }
 
     private boolean isFirstAccount(User user) {
@@ -125,13 +124,6 @@ public class AccountServiceImpl implements AccountService {
     private Account getAccount(Long accountId) {
         return accountDao.getAccount(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not exist id=%s".formatted(accountId)));
-    }
-
-    public List<Account> getAllUserAccounts(User user) {
-        return accountDao.findAllAccountsByUserId(user.getUserId())
-                .stream()
-                .filter(account -> account.getUser().getUserId().equals(user.getUserId()))
-                .toList();
     }
 }
 
