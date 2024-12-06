@@ -23,16 +23,16 @@ public class TransactionHelper {
         Session session = sessionFactory.getCurrentSession();
         Transaction transaction = session.getTransaction();
 
-        if (transaction.getStatus().equals(TransactionStatus.ACTIVE)) {
+        if (!transaction.getStatus().equals(TransactionStatus.NOT_ACTIVE)) {
              action.accept(session);
              return;
         }
         try {
-            transaction.begin();
+            transaction = session.beginTransaction();
             action.accept(session);
             transaction.commit();
         } catch (Exception e) {
-            if (transaction.getStatus().equals(TransactionStatus.MARKED_ROLLBACK)) {
+            if (transaction != null && transaction.getStatus().canRollback()) {
                 transaction.rollback();
             }
             throw e;
@@ -43,19 +43,19 @@ public class TransactionHelper {
         Session session = sessionFactory.getCurrentSession();
         Transaction transaction = session.getTransaction();
 
-        if (transaction.getStatus().equals(TransactionStatus.ACTIVE)) {
+        if (!transaction.getStatus().equals(TransactionStatus.NOT_ACTIVE)) {
             return action.apply(session);
         }
         try {
-            transaction.begin();
+            transaction = session.beginTransaction();
             R res = action.apply(session);
             transaction.commit();
             return res;
         } catch (Exception e) {
-            if (transaction.getStatus().equals(TransactionStatus.MARKED_ROLLBACK)) {
+            if (transaction != null && transaction.getStatus().canRollback()) {
                 transaction.rollback();
             }
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 }
