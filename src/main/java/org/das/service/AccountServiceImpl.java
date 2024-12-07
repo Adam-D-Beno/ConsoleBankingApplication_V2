@@ -6,6 +6,9 @@ import org.das.model.Account;
 import org.das.model.User;
 import org.das.utils.AccountProperties;
 import org.das.validate.AccountValidation;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,18 +21,20 @@ public class AccountServiceImpl implements AccountService {
     private final AccountValidation accountValidation;
     private final AccountProperties accountProperties;
     private final UserDao userDao;
+    private final SessionFactory sessionFactory;
 
 
     @Autowired
     public AccountServiceImpl(AccountDao accountDao,
                               AccountValidation accountValidation,
                               AccountProperties accountProperties,
-                              UserDao userDao
+                              UserDao userDao, SessionFactory sessionFactory
     ) {
         this.accountDao = accountDao;
         this.accountValidation = accountValidation;
         this.accountProperties = accountProperties;
         this.userDao = userDao;
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
@@ -91,18 +96,29 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void transfer(Long accountFromId, Long accountToId, BigDecimal amount) {
-        accountValidation.negativeAmount(amount);
-        Account fromAccount = getAccount(accountFromId);
-        Account toAccount = getAccount(accountToId);
-        accountValidation.isSameAccount(fromAccount, toAccount);
-        if (isAccountOneUser(fromAccount, toAccount)) {
-            withdraw(fromAccount.getAccountId(), amount);
-            deposit(toAccount.getAccountId(), amount);
-            return;
+        Transaction transaction = null;
+        try(Session session = sessionFactory.getCurrentSession()) {
+            transaction = session.getTransaction();
+            transaction.begin();
+                Account fromAccount = getAccount(accountFromId);
+                accountValidation.negativeAmount(amount);
+                Account toAccount = getAccount(accountToId);
+                accountValidation.isSameAccount(fromAccount, toAccount);
+                BigDecimal amountAfterCommission = calculateAmountAfterCommission(amount);
+                if (isAccountOneUser(fromAccount, toAccount)) {
+                    fromAccount.decreaseAmount(amount);
+                    toAccount.increaseAmount(amount);
+                } else {
+                    fromAccount.decreaseAmount(amount);
+                    toAccount.increaseAmount(amountAfterCommission);
+                }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction!= null) {
+                transaction.rollback();
+            }
+            throw e;
         }
-        BigDecimal amountAfterCommission = calculateAmountAfterCommission(amount);
-        withdraw(fromAccount.getAccountId(), amount);
-        deposit(toAccount.getAccountId(), amountAfterCommission);
     }
 
     private boolean isAccountOneUser(Account fromAccount, Account toAccount) {
