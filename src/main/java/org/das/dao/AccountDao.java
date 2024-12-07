@@ -18,13 +18,6 @@ public class AccountDao {
         this.sessionFactory = sessionFactory;
     }
 
-//    public Account save(Account account) {
-//        return transactionHelper.executeInTransaction(session -> {
-//            session.persist(account);
-//            return account;
-//        });
-//    }
-
     public Account save(Account account) {
         return transactionHelper.executeInTransaction(session -> {
             session.persist(account);
