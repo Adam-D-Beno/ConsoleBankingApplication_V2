@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Component
 public class TransactionHelper {
@@ -24,7 +25,7 @@ public class TransactionHelper {
         Transaction transaction = session.getTransaction();
 
         if (!transaction.getStatus().equals(TransactionStatus.NOT_ACTIVE)) {
-             action.accept(session);
+            action.accept(session);
              return;
         }
         try {
@@ -51,6 +52,28 @@ public class TransactionHelper {
         try {
             transaction = session.beginTransaction();
             R res = action.apply(session);
+            transaction.commit();
+            return res;
+        } catch (Exception e) {
+            if (transaction != null && transaction.getStatus().canRollback()) {
+                transaction.rollback();
+            }
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
+    public <T> T executeInTransaction(Supplier<T> action) {
+        Session session = sessionFactory.getCurrentSession();
+        Transaction transaction = session.getTransaction();
+
+        if (!transaction.getStatus().equals(TransactionStatus.NOT_ACTIVE)) {
+            return action.get();
+        }
+        try {
+            transaction = session.beginTransaction();
+            T res = action.get();
             transaction.commit();
             return res;
         } catch (Exception e) {
