@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void showAllUsers() {
-        userDao.getUsers().forEach(System.out::println);
+        userDao.findAllUsers().forEach(System.out::println);
     }
 
     @Override
