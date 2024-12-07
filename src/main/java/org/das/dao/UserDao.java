@@ -22,7 +22,8 @@ public class UserDao {
 
     public Optional<User> getUserByLogin(String login) {
         return transactionHelper.executeInTransaction(session -> {
-            return Optional.ofNullable(session.createQuery("SELECT u FROM User u WHERE u.login =:login", User.class)
+            return Optional.ofNullable(session.createQuery(
+                    "SELECT u FROM User u WHERE u.login =:login", User.class)
                     .setParameter("login", login)
                     .getSingleResultOrNull()
           );
@@ -37,13 +38,10 @@ public class UserDao {
         });
     }
 
-    public Collection<User> getUsers() {
-        return findAllUsers();
-    }
-
     public List<User> findAllUsers() {
        return transactionHelper.executeInTransaction(session -> {
-            return session.createQuery("SELECT u FROM User u", User.class)
+            return session.createQuery(
+                    "SELECT u FROM User u left join fetch u.accounts", User.class)
                     .list();
         });
     }
